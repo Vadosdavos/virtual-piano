@@ -43,7 +43,7 @@ window.addEventListener('keydown', function (evt) {
   if (evt.repeat) {
     return;
   }
-  let letter = evt.code.charAt(3);
+  let letter = evt.code.charAt(evt.code.length - 1);
   for (let pianoKey of pianoKeys) {
     if (letter === pianoKey.dataset.letter) {
       let note = pianoKey.dataset.note;

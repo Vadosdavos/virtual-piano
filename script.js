@@ -2,7 +2,8 @@ const pianoKeys = document.querySelectorAll('.piano-key');
 const piano = document.querySelector('.piano');
 const buttons = document.querySelectorAll('.btn');
 const buttonsContainer = document.querySelector('.btn-container');
-
+const fullscreenButton = document.querySelector('.fullscreen');
+let isMousedown;
 function playAudio(src) {
   const audio = new Audio();
   audio.src = src;
@@ -12,6 +13,7 @@ function playAudio(src) {
 
 piano.addEventListener('mousedown', function (evt) {
   if (evt.target.classList.contains('piano-key')) {
+    isMousedown = true;
     let note = evt.target.dataset.note;
     let src = `assets/audio/${note}.mp3`;
     playAudio(src);
@@ -21,23 +23,30 @@ piano.addEventListener('mousedown', function (evt) {
       }
     });
     evt.target.classList.add('piano-key-active');
-
-    piano.addEventListener('mouseup', function (evt) {
-      pianoKeys.forEach((el) => {
-        if (el.classList.contains('piano-key-active')) {
-          el.classList.remove('piano-key-active');
-        }
-      });
-    });
   }
 });
-/* piano.addEventListener('mouseover', function (evt) {
-    if (evt.target.classList.contains('piano-key')) {
-      let note = evt.target.dataset.note;
-      let src = `assets/audio/${note}.mp3`;
-      playAudio(src);
+window.addEventListener('mouseup', function (evt) {
+  isMousedown = false;
+  pianoKeys.forEach((el) => {
+    if (el.classList.contains('piano-key-active')) {
+      el.classList.remove('piano-key-active');
     }
-  }); */
+  });
+});
+window.addEventListener('mouseover', function (evt) {
+  if (evt.target.classList.contains('piano-key') && isMousedown) {
+    let note = evt.target.dataset.note;
+    let src = `assets/audio/${note}.mp3`;
+    playAudio(src);
+    evt.target.classList.add('piano-key-active');
+  }
+});
+
+window.addEventListener('mouseout', function (evt) {
+  if (evt.target.classList.contains('piano-key') && isMousedown) {
+    evt.target.classList.remove('piano-key-active');
+  }
+});
 
 window.addEventListener('keydown', function (evt) {
   if (evt.repeat) {
@@ -80,3 +89,20 @@ buttonsContainer.addEventListener('click', function (evt) {
     }
   }
 });
+
+function toggleFullScreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  }
+}
+fullscreenButton.addEventListener(
+  'click',
+  function (evt) {
+    toggleFullScreen();
+  },
+  false
+);
